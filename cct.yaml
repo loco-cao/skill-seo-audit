@@ -1,0 +1,69 @@
+name: seo-audit
+version: 0.1.0
+description: "SEO 多专家 AI 审计系统 — 14 位领域专家并行审计网站或本地项目，支持免费 API 数据增强"
+argument-hint: "<url> [--local] [--auto] [--api-key KEY] [--gsc] [--ga4 PROPERTY_ID]"
+
+targets:
+  claude:
+    trigger: /seo-audit
+    path: SKILL.md
+    install:
+      - from: SKILL.md
+        to: skills/seo-audit/SKILL.md
+      - from: agents
+        to: agents
+      - from: shared
+        to: skills/seo-audit/shared
+      - from: references
+        to: skills/seo-audit/references
+      - from: workflows
+        to: skills/seo-audit/workflows
+      - from: scripts
+        to: skills/seo-audit/scripts
+
+prompts:
+  - name: mode
+    type: select
+    message: "选择审计模式"
+    options:
+      - label: "远程 URL"
+        value: "<url>"
+      - label: "本地项目"
+        value: "--local"
+      - label: "自动模式 (跳过确认)"
+        value: "--auto"
+  - name: target_url
+    type: input
+    message: "输入目标网站 URL"
+    when:
+      field: mode
+      equals: "<url>"
+    validate: "^https?://"
+  - name: api_enhance
+    type: confirm
+    message: "是否启用 API 数据增强（需要配置 Service Account）"
+    default: false
+  - name: psi_key
+    type: input
+    message: "输入 PageSpeed Insights API Key（留空跳过 PSI 数据）"
+    when:
+      field: api_enhance
+      equals: true
+  - name: gsc_enabled
+    type: confirm
+    message: "是否启用 Google Search Console 数据"
+    default: false
+    when:
+      field: api_enhance
+      equals: true
+  - name: ga4_property
+    type: input
+    message: "输入 GA4 Property ID（留空跳过 GA4 数据）"
+    when:
+      field: api_enhance
+      equals: true
+
+output_dir: .seo-audit
+report_pattern: "*/report.json"
+global_timeout: 3600
+agent_timeout: 600
