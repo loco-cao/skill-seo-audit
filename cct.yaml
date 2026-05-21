@@ -1,7 +1,7 @@
 name: seo-audit
-version: 0.1.0
-description: "SEO 多专家 AI 审计系统 — 14 位领域专家并行审计网站或本地项目，支持免费 API 数据增强"
-argument-hint: "<url> [--local] [--auto] [--api-key KEY] [--gsc] [--ga4 PROPERTY_ID]"
+version: 0.2.0
+description: "SEO 多专家 AI 审计系统 — 17 位领域专家分五批并行审计网站或本地项目，基于 352 黄金法则覆盖技术、内容、外链、竞品与数据全维度"
+argument-hint: "<url> [--local] [--auto] [--api-key KEY] [--gsc] [--ga4 PROPERTY_ID] [--competitor DOMAIN1,DOMAIN2]"
 
 targets:
   claude:
@@ -62,6 +62,10 @@ prompts:
     when:
       field: api_enhance
       equals: true
+  - name: competitor_domains
+    type: input
+    message: "输入竞品域名（逗号分隔，留空跳过竞品分析）"
+    default: ""
 
 output_dir: .seo-audit
 report_pattern: "*/report.json"

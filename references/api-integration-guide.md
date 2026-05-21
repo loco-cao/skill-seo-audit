@@ -13,9 +13,9 @@
 | API | 获取的数据 | 替代/增强的 Expert |
 |-----|-----------|-------------------|
 | **PageSpeed Insights** | 真实用户 CWV（LCP/INP/CLS）、Lighthouse 分数 | `seo-core-web-vitals-expert` |
-| **Google Search Console** | 搜索查询（CTR/排名）、外链列表、索引状态 | `seo-crawlability-expert`、`seo-indexability-expert` |
-| **Google Analytics 4** | 页面互动率、平均停留时间、流量来源 | `seo-content-expert`、`seo-ux-expert` |
-| **Google Trends** | 品牌/关键词搜索热度趋势 | `seo-eeat-expert`（品牌信号辅助） |
+| **Google Search Console** | 搜索查询（CTR/排名）、外链列表、索引状态 | `seo-crawlability-expert`、`seo-indexability-expert`、`seo-backlink-expert`、`seo-data-expert` |
+| **Google Analytics 4** | 页面互动率、平均停留时间、流量来源 | `seo-content-expert`、`seo-ux-expert`、`seo-data-expert` |
+| **Google Trends** | 品牌/关键词搜索热度趋势 | `seo-eeat-expert`、`seo-competitor-expert`（品牌信号辅助） |
 
 ---
 
@@ -141,9 +141,12 @@ node scripts/gsc.js --site https://example.com/ [--queries] [--links] [--all] [-
 
 ### Expert 使用方式
 
-- `seo-crawlability-expert`：用 `links` 数据补充外链健康度分析
+- `seo-crawlability-expert`：用覆盖率数据补充索引状态分析
+- `seo-indexability-expert`：用索引状态数据验证 canonical/sitemap 正确性
 - `seo-content-expert`：用 `searchQueries` 验证内容是否匹配用户搜索意图
 - `seo-meta-expert`：用 `ctr` 低的查询词定位需要优化的 title/description
+- `seo-backlink-expert`：用 `links` 数据补充外链健康度分析
+- `seo-data-expert`：用全量 GSC 数据生成趋势解读和风险评估
 
 ---
 
@@ -213,6 +216,7 @@ node scripts/ga4.js --property 123456789 [--days 28] [--traffic] [--all]
 - `seo-content-expert`：用 `engagementRate` 和 `avgEngagementTimeSec` 验证内容质量
 - `seo-ux-expert`：用 `bounceRate` 和页面级数据定位体验问题
 - `seo-eeat-expert`：用 `trafficSources` 中的 Direct 流量比例推断品牌认知度
+- `seo-data-expert`：用全量 GA4 数据生成用户行为趋势解读和 UX 信号评估
 
 ---
 
@@ -264,6 +268,7 @@ pip install pytrends
 
 - `seo-eeat-expert`：用品牌搜索趋势验证品牌权威性信号
 - `seo-content-expert`：用 `relatedQueries.rising` 发现新的内容主题机会
+- `seo-competitor-expert`：用品牌对比趋势判断竞品品牌强度
 
 ---
 
