@@ -30,16 +30,43 @@ Read: shared/seo-audit.md
 
 ### 飞行前检查 — 文件验证
 
-验证工作流和参考文件存在：
+验证工作流和参考文件存在。使用 Read 工具依次检查以下文件（跨平台，不依赖 shell）：
 
+| 文件路径 | 用途 |
+|----------|------|
+| `references/crawlability-guide.md` | 爬取通道审查指南 |
+| `references/backlink-guide.md` | 外链质量审查指南 |
+| `references/competitor-guide.md` | 竞品分析指南 |
+| `references/seo-352-framework.md` | SEO 352 黄金法则框架 |
+| `references/api-integration-guide.md` | API 集成指南 |
+
+**检查方式**（二选一，根据平台自动选择）：
+
+**macOS / Linux (Bash):**
 ```bash
 SKILL_DIR="$HOME/.claude/skills/seo-audit"
-test -f "$SKILL_DIR/references/crawlability-guide.md" && echo "OK: crawlability" || echo "MISSING: crawlability"
-test -f "$SKILL_DIR/references/backlink-guide.md" && echo "OK: backlink" || echo "MISSING: backlink"
-test -f "$SKILL_DIR/references/competitor-guide.md" && echo "OK: competitor" || echo "MISSING: competitor"
-test -f "$SKILL_DIR/references/seo-352-framework.md" && echo "OK: 352-framework" || echo "MISSING: 352-framework"
-test -f "$SKILL_DIR/references/api-integration-guide.md" && echo "OK: api-guide" || echo "MISSING: api-guide"
+for f in crawlability-guide backlink-guide competitor-guide seo-352-framework api-integration-guide; do
+  if [ -f "$SKILL_DIR/references/$f.md" ]; then
+    echo "OK: $f"
+  else
+    echo "MISSING: $f"
+  fi
+done
 ```
+
+**Windows (PowerShell):**
+```powershell
+$SKILL_DIR = "$env:USERPROFILE\.claude\skills\seo-audit"
+@("crawlability-guide","backlink-guide","competitor-guide","seo-352-framework","api-integration-guide") | ForEach-Object {
+  if (Test-Path "$SKILL_DIR\references\$_.md") {
+    Write-Output "OK: $_"
+  } else {
+    Write-Output "MISSING: $_"
+  }
+}
+```
+
+**注意：严禁混用语法！** Bash 中用 `&&`/`||`/`echo`，PowerShell 中用 `Test-Path`/`Write-Output`。在 Windows 上必须使用 PowerShell 版本，不要在 Bash 中使用 `Write-Output` 或 `-and`/`-or`。
 
 如有缺失：**立即停止**，提示用户运行 `cct install` 重新安装。
 
