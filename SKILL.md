@@ -1,6 +1,6 @@
 ---
 name: seo-audit
-description: "SEO 多专家 AI 审计系统 — 17 位领域专家分五批并行审计网站或本地项目，覆盖技术SEO、内容、外链、竞品与数据解读"
+description: "SEO 多专家 AI 审计系统 — 17 位领域专家分五批并行审计网站或本地项目，覆盖技术SEO、内容、外链、竞品与数据解读。含证据溯源、双方案修复、诊断模式库、Schema 深度参考"
 argument-hint: "<url> [--local] [--auto] [--api-key KEY] [--gsc] [--ga4 PROPERTY_ID] [--competitor DOMAIN1,DOMAIN2]"
 allowed-tools:
   - Read
@@ -39,13 +39,15 @@ Read: shared/seo-audit.md
 | `references/competitor-guide.md` | 竞品分析指南 |
 | `references/seo-352-framework.md` | SEO 352 黄金法则框架 |
 | `references/api-integration-guide.md` | API 集成指南 |
+| `references/diagnostic-patterns.md` | 诊断模式库（7 大典型场景） |
+| `references/schema-docs/` | Schema 结构化数据深度参考（36 种类型） |
 
 **检查方式**（二选一，根据平台自动选择）：
 
 **macOS / Linux (Bash):**
 ```bash
 SKILL_DIR="$HOME/.claude/skills/seo-audit"
-for f in crawlability-guide backlink-guide competitor-guide seo-352-framework api-integration-guide; do
+for f in crawlability-guide backlink-guide competitor-guide seo-352-framework api-integration-guide diagnostic-patterns; do
   if [ -f "$SKILL_DIR/references/$f.md" ]; then
     echo "OK: $f"
   else
@@ -57,7 +59,7 @@ done
 **Windows (PowerShell):**
 ```powershell
 $SKILL_DIR = "$env:USERPROFILE\.claude\skills\seo-audit"
-@("crawlability-guide","backlink-guide","competitor-guide","seo-352-framework","api-integration-guide") | ForEach-Object {
+@("crawlability-guide","backlink-guide","competitor-guide","seo-352-framework","api-integration-guide","diagnostic-patterns") | ForEach-Object {
   if (Test-Path "$SKILL_DIR\references\$_.md") {
     Write-Output "OK: $_"
   } else {
@@ -143,14 +145,14 @@ node "$SKILL_DIR/scripts/ga4.js" --property <ga4_property> --all --days 28 > <SE
 
 ```
 Agent(subagent_type="seo-crawlability-expert", description="Crawlability audit",
-  prompt="审查 <url>。将结果写入 <SESSION_DIR>/01-crawlability/report.json。评分 0-100。输出合法 JSON，字段：expert, score, maxScore, weight, status, findings[], summary。每个 finding 必须有 severity/category/title/description/evidence/recommendation。执行期间在关键步骤更新 <SESSION_DIR>/01-crawlability/status.json。")
+  prompt="审查 <url>。将结果写入 <SESSION_DIR>/01-crawlability/report.json。评分 0-100。输出合法 JSON，字段：expert, score, maxScore, weight, status, findings[], summary。每个 finding 必须遵循 Finding 结构规范（severity/category/title/description/evidence/recommendation/reference/quickFix/longTermFix）。reference 引用 crawlability-guide 对应章节。执行期间在关键步骤更新 <SESSION_DIR>/01-crawlability/status.json。")
 ```
 
 ### 调用示例（本地模式）
 
 ```
 Agent(subagent_type="seo-crawlability-expert", description="Crawlability audit",
-  prompt="你是爬取通道专家。这是本地代码审查——不要使用 WebFetch。使用 Read 和 Grep 扫描项目 <project_path> 中的 robots.txt、HTML/JSX/TSX/Vue 文件，检查重定向配置、死链、HTTP 状态码。将结果写入 <SESSION_DIR>/01-crawlability/report.json。评分 0-100。输出合法 JSON。")
+  prompt="你是爬取通道专家。这是本地代码审查——不要使用 WebFetch。使用 Read 和 Grep 扫描项目 <project_path> 中的 robots.txt、HTML/JSX/TSX/Vue 文件，检查重定向配置、死链、HTTP 状态码。将结果写入 <SESSION_DIR>/01-crawlability/report.json。评分 0-100。输出合法 JSON。每个 finding 遵循 Finding 结构规范（含 reference/quickFix/longTermFix）。")
 ```
 
 **关键：每批 Agent 调用必须在同一轮中发出，利用并行 tool calls。批次间串行，等前一批全部完成后再发下一批。不得使用中介 agent 做编排。**
@@ -172,7 +174,7 @@ Agent(subagent_type="seo-crawlability-expert", description="Crawlability audit",
 ### 汇总
 
 参考 `shared/seo-audit.md` 中的 352 框架评分公式和输出格式，生成：
-- `<SESSION_DIR>/99-summary/report-final.json`
-- `<SESSION_DIR>/99-summary/report-final.html`
-- `<SESSION_DIR>/99-summary/action-plan.md`
-- `<SESSION_DIR>/99-summary/seo-352-report.md`（352框架专项报告）
+- `<SESSION_DIR>/99-summary/report-final.json` — 结构化数据（含证据溯源、诊断模式匹配结果）
+- `<SESSION_DIR>/99-summary/report-final.html` — 可视化仪表板（雷达图、证据链接、逐专家明细）
+- `<SESSION_DIR>/99-summary/action-plan.md` — 按 P0-P3 分组，每组内分「快速修复」和「长期优化」
+- `<SESSION_DIR>/99-summary/seo-352-report.md` — 352框架专项报告（3大要素 + 5维检查 + 2条底线）
